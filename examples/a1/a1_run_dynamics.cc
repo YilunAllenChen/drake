@@ -12,12 +12,12 @@
 #include "drake/systems/analysis/simulator_gflags.h"
 #include "drake/systems/framework/diagram_builder.h"
 
-DEFINE_double(target_realtime_rate, 0.2,
+DEFINE_double(target_realtime_rate, 1,
               "Desired rate relative to real time (usually between 0 and 1). "
               "This is documented in Simulator::set_target_realtime_rate().");
-DEFINE_double(simulation_time, 15.0, "Simulation duration in seconds");
+DEFINE_double(simulation_time, 6.0, "Simulation duration in seconds");
 DEFINE_double(
-    time_step, 1.0E-3,
+    time_step, 1.0E-4,
     "The fixed-time step period (in seconds) of discrete updates for the "
     "multibody plant modeled as a discrete system. Strictly positive.");
 DEFINE_double(penetration_allowance, 1.0E-3, "Allowable penetration (meters).");
@@ -105,7 +105,7 @@ int do_main() {
   plant.get_actuation_input_port().FixValue(&plant_context, tau);
 
   // Set the pelvis frame P initial pose.
-  const Translation3d X_WP(0.0, 0.0, 0.9);
+  const Translation3d X_WP(0.0, 0.0, 10);
   plant.SetFreeBodyPoseInWorldFrame(&plant_context, pelvis, X_WP);
 
    auto simulator =
