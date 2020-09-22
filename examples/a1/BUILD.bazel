@@ -31,6 +31,7 @@ drake_cc_binary(
         "//systems/analysis:simulator",
         "//systems/analysis:simulator_gflags",
         "//systems/framework:diagram",
+        "//systems/controllers",
         "@gflags",
     ],
 )

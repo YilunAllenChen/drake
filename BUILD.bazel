@@ -7,6 +7,7 @@ load("//tools/skylark:py.bzl", "py_library")
 load("@drake//tools/install:install.bzl", "install", "install_test")
 load("//tools/lint:lint.bzl", "add_lint_tests")
 
+
 package(
     default_visibility = ["//visibility:public"],
 )

@@ -348,7 +348,7 @@ def _maybe_add_pruned_private_hdrs_dep(
             srcs = [],
             deps = deps,
             linkstatic = 1,
-            visibility = ["//visibility:private"],
+            visibility = ["//visibility:public"],
             **kwargs
         )
         new_deps = deps + [":" + name]
@@ -518,7 +518,7 @@ def drake_cc_binary(
         output_to_bindir = 1,
         testonly = testonly,
         tags = tags + ["dsym"],
-        visibility = ["//visibility:private"],
+        visibility = ["//visibility:public"],
         cmd = _dsym_command(name),
     )
 
@@ -592,7 +592,7 @@ def drake_cc_test(
         output_to_bindir = 1,
         testonly = kwargs["testonly"],
         tags = ["dsym"],
-        visibility = ["//visibility:private"],
+        visibility = ["//visibility:public"],
         cmd = _dsym_command(name),
     )
 
