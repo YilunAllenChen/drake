@@ -76,20 +76,6 @@ int do_main() {
   plant.set_penetration_allowance(FLAGS_penetration_allowance);
   plant.set_stiction_tolerance(FLAGS_stiction_tolerance);
 
-  //   Create PID Controller.
-//   const Eigen::VectorXd Kp =
-//       Eigen::VectorXd::Ones(plant.num_positions()) * FLAGS_Kp_;
-//   const Eigen::VectorXd Ki =
-//       Eigen::VectorXd::Ones(plant.num_positions()) * FLAGS_Ki_;
-//   const Eigen::VectorXd Kd =
-//       Eigen::VectorXd::Ones(plant.num_positions()) * FLAGS_Kd_;
-//   const auto* const pid =
-//       builder.AddSystem<systems::controllers::PidController<double>>(Kp, Ki,
-//                                                                      Kd);
-//   builder.Connect(plant.get_state_output_port(),
-//                   pid->get_input_port_estimated_state());
-//   builder.Connect(pid->get_output_port_control(),
-//                   plant.get_actuation_input_port());
 
   const drake::multibody::Body<double>& a1_base = plant.GetBodyByName("base");
   ConnectContactResultsToDrakeVisualizer(&builder, plant);
@@ -100,24 +86,17 @@ int do_main() {
   systems::Context<double>& plant_context =
       diagram->GetMutableSubsystemContext(plant, diagram_context.get());
 
-  for (int i = 0; i < plant.num_input_ports(); i++) {
-    cout << "Input Port [" << i << "] : " << plant.get_input_port(i).get_name()
-         << endl;
-  }
-  cout << endl;
-  for (int i = 0; i < plant.num_output_ports(); i++) {
-    cout << "Output Port [" << i
-         << "] : " << plant.get_output_port(i).get_name() << endl;
-  }
 
   VectorXd tau = VectorXd::Zero(plant.num_actuated_dofs()) * 2;
-    for (int i = 0; i < plant.num_actuated_dofs(); i++) {
-      if (i % 3 != 0) {
-        tau[i] = 6;
-      } else {
-        tau[i] = i % 6 == 0 ? -1 : 1;  // legs outward
-      }
+  for (int i = 0; i < plant.num_actuated_dofs(); i++) {
+    if (i % 3 == 1) {
+      tau[i] = -100;
+    } else if (i % 3 == 2) {
+      tau[i] = -100;
+    } else {
+      tau[i] = i % 6 == 0 ? -1 : 1;  // legs outward
     }
+  }
   plant.get_actuation_input_port().FixValue(&plant_context, tau);
 
   // Set the a1_base frame P initial pose.
@@ -126,29 +105,91 @@ int do_main() {
 
   auto simulator =
       MakeSimulatorFromGflags(*diagram, std::move(diagram_context));
-  simulator->AdvanceTo(1);
+
+  std::string jointNames[] = {
+      "FR_hip_joint", "FR_thigh_joint", "FR_calf_joint",
+
+      "FL_hip_joint", "FL_thigh_joint", "FL_calf_joint",
+
+      "RR_hip_joint", "RR_thigh_joint", "RR_calf_joint",
+
+      "RL_hip_joint", "RL_thigh_joint", "RL_calf_joint",
+
+  };
 
 
 
 
-  const systems::OutputPort<double>& output = plant.get_state_output_port();
-  cout << "Output port [" << output.get_name() << "] of size: ["
-       << output.Eval(plant_context).size() << "] : " << output.get_name()
-       << endl;
-  for (int i = 0; i < output.Eval(plant_context).size(); i++) {
-    cout << output.Eval(plant_context)[i] << " ";
+  Eigen::MatrixXd perturbationMtx = Eigen::MatrixXd::Zero(19, 19);
+  for (double i = 0; i < 2; i += 0.1) {
+    for (auto jointName : jointNames) {
+      auto jointPosNdx = plant.GetJointByName(jointName).position_start();
+      cout << jointName << " : " << stateVec[jointPosNdx] << "  |  ";
+      perturbationMtx(jointPosNdx, jointPosNdx) = 1;
+    }
+    cout << endl << endl;
+    simulator->AdvanceTo(i);
+  }
+
+  for(int i = 0; i < 19; i++){
+    for(int j = 0; j < 19; j++){
+      cout << perturbationMtx(i,j) << " ";
+    }
+    cout << endl;
   }
   cout << endl;
 
-  const Eigen::VectorBlock<const Eigen::VectorXd> vec =
-      plant.GetPositions(plant_context);
-  cout << "positions are : [" << vec.size() << "] : " << endl;
-  for (int i = 0; i < vec.size(); i++) {
-    cout << vec[i] << " ";
+  //   Create PID Controller.
+  //   const Eigen::VectorXd Kp =
+  //       Eigen::VectorXd::Ones(plant.num_positions()) * FLAGS_Kp_;
+  //   const Eigen::VectorXd Ki =
+  //       Eigen::VectorXd::Ones(plant.num_positions()) * FLAGS_Ki_;
+  //   const Eigen::VectorXd Kd =
+  //       Eigen::VectorXd::Ones(plant.num_positions()) * FLAGS_Kd_;
+  //   const auto* const pid =
+  //       builder.AddSystem<systems::controllers::PidController<double>>(Kp,
+  //       Ki,
+  //                                                                      Kd);
+  //   builder.Connect(plant.get_state_output_port(),
+  //                   pid->get_input_port_estimated_state());
+  //   builder.Connect(pid->get_output_port_control(),
+  //                   plant.get_actuation_input_port
+
+  std::string jointActuatorNames[] = {
+      "FR_hip_motor",
+  };
+
+  auto stateVec = plant.GetPositions(plant_context);
+  cout << "state vec len is: " << stateVec.size() << endl;
+
+
+  Eigen::MatrixXd perturbationMtx = Eigen::MatrixXd::Zero(19, 19);
+  for (double i = 0; i < 2; i += 0.1) {
+    for (auto jointName : jointNames) {
+      auto jointPosNdx = plant.GetJointByName(jointName).position_start();
+      cout << jointName << " : " << stateVec[jointPosNdx] << "  |  ";
+      perturbationMtx(jointPosNdx, jointPosNdx) = 1;
+    }
+    cout << endl << endl;
+    simulator->AdvanceTo(i);
+  }
+
+  for(int i = 0; i < 19; i++){
+    for(int j = 0; j < 19; j++){
+      cout << perturbationMtx(i,j) << " ";
+    }
+    cout << endl;
   }
   cout << endl;
 
-
+  // const systems::OutputPort<double>& output = plant.get_state_output_port();
+  // cout << "Output port [" << output.get_name() << "] of size: ["
+  //      << output.Eval(plant_context).size() << "] : " << output.get_name()
+  //      << endl;
+  // for (int i = 0; i < output.Eval(plant_context).size(); i++) {
+  //   cout << output.Eval(plant_context)[i] << " ";
+  // }
+  // cout << endl;
 
   simulator->AdvanceTo(FLAGS_simulation_time);
   return 0;
