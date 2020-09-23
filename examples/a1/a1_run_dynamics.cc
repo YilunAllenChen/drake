@@ -94,9 +94,9 @@ int do_main() {
   VectorXd tau = VectorXd::Zero(plant.num_actuated_dofs());
   for (int i = 0; i < plant.num_actuated_dofs(); i++) {
     if (i % 3 == 1) {
-      tau[i] = -100;
+      tau[i] = -1;
     } else if (i % 3 == 2) {
-      tau[i] = -100;
+      tau[i] = -1;
     } else {
       tau[i] = i % 6 == 0 ? -1 : 1;  // legs outward
     }
@@ -170,7 +170,7 @@ int do_main() {
   cout << result << endl;
   for (auto jointName : jointNames) {
     auto jointPosNdx = plant.GetJointByName(jointName).position_start();
-    cout << jointName << " : " << stateVec[jointPosNdx] << "  |  ";
+    cout << jointName << "(" << jointPosNdx << ") : " << stateVec[jointPosNdx] << endl;
   }
   cout << endl << endl;
 
