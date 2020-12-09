@@ -1,0 +1,18 @@
+package cassie_types;
+
+struct lcmt_cassie_status {
+  // The timestamp in microseconds.
+  int64_t utime;
+
+  int32_t status;
+  int32_t charge_state;
+
+  float radio[16];
+
+  float pressure;
+  float temperature;
+}
+
+/*
+ * Created 2018-03-16
+ */

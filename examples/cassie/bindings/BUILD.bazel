@@ -1,0 +1,35 @@
+# -*- mode: python -*-
+# vi: set ft=python :
+
+load("@drake//tools/lint:lint.bzl", "add_lint_tests")
+load(
+    "@drake//tools/skylark:pybind.bzl",
+    "pybind_py_library",
+)
+
+# -- Libraries --
+
+pybind_py_library(
+    name = "cassie_common_py",
+    cc_deps = ["//cassie:cassie_common"],
+    cc_so_name = "cassie_common",
+    cc_srcs = ["cassie_common_py.cc"],
+    py_deps = ["@drake//bindings/pydrake"],
+    py_imports = ["."],
+    visibility = ["//visibility:public"],
+)
+
+# -- Tests --
+
+py_test(
+    name = "cassie_common_py_test",
+    size = "small",
+    srcs = ["test/cassie_common_py_test.py"],
+    main = "test/cassie_common_py_test.py",
+    deps = [
+        ":cassie_common_py",
+        "@drake//bindings/pydrake",
+    ],
+)
+
+add_lint_tests()

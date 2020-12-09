@@ -1,0 +1,45 @@
+# -*- mode: python -*-
+# vi: set ft=python :
+
+load("@drake//tools/lint:lint.bzl", "add_lint_tests")
+
+# -- Libraries --
+
+cc_library(
+    name = "control_comms",
+    srcs = ["control_comms.cc"],
+    hdrs = ["control_comms.h"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//cassie:cassie_common",
+        "//cassie/comms:cassie_lcm_parsing",
+        "//cassie/comms/lcmtypes:lcmtypes_cc",
+        "@drake//lcm",
+        "@drake//systems/framework:diagram_builder",
+        "@drake//systems/framework:leaf_system",
+        "@drake//systems/lcm:lcm_pubsub_system",
+    ],
+)
+
+# -- Tests --
+
+cc_test(
+    name = "control_comms_test",
+    size = "small",
+    srcs = ["test/control_comms_test.cc"],
+    deps = [
+        "//cassie:cassie_common",
+        "//cassie/comms:cassie_lcm_parsing",
+        "//cassie/comms/lcmtypes:lcmtypes_cc",
+        "//cassie/control/lcm:control_comms",
+        "@drake//common/test_utilities:eigen_matrix_compare",
+        "@drake//lcm",
+        "@drake//systems/framework:abstract_values",
+        "@drake//systems/framework:value",
+        "@drake//systems/framework:vector",
+        "@drake//systems/lcm:lcm_pubsub_system",
+        "@gtest//:main",
+    ],
+)
+
+add_lint_tests()

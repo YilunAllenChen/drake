@@ -1,0 +1,89 @@
+# -*- mode: python -*-
+# vi: set ft=python :
+
+load("@drake//tools/lint:lint.bzl", "add_lint_tests")
+
+# -- Libraries --
+
+cc_library(
+    name = "control_util",
+    srcs = ["control_util.cc"],
+    hdrs = ["control_util.h"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//cassie:cassie_common",
+        "@drake//attic/multibody:rigid_body_tree",
+        # Required to make python bindings for this class
+        # "@drake//:drake_shared_library",
+    ],
+)
+
+# -- Executables --
+
+py_binary(
+    name = "cassie_balancing_sim",
+    srcs = ["cassie_balancing_sim.py"],
+    deps = [
+        "//cassie/bindings:cassie_common_py",
+        "//cassie/bindings/control:control_util_py",
+        "@drake//bindings/pydrake",
+        "@lcm//:lcm-python",
+        "@libbot//:lcmtypes_bot_lcmgl",
+    ],
+)
+
+py_binary(
+    name = "cassie_balancing_mock",
+    srcs = ["cassie_balancing_mock.py"],
+    deps = [
+        "//cassie/bindings:cassie_common_py",
+        "//cassie/bindings/control:control_util_py",
+        "//cassie/bindings/control:lcm_control_comms_py",
+        "//cassie/bindings/models:mock_low_level_py",
+        "@drake//bindings/pydrake",
+        "@lcm//:lcm-python",
+        "@libbot//:lcmtypes_bot_lcmgl",
+    ],
+)
+
+py_binary(
+    name = "qp_balance_hw",
+    srcs = ["qp_balance_hw.py"],
+    deps = [
+        "//cassie/bindings:cassie_common_py",
+        "//cassie/bindings/comms:cassie_lcm_parsing_py",
+        "//cassie/bindings/control:control_util_py",
+        "//cassie/comms/lcmtypes:lcmtypes_py",
+        "@drake//bindings/pydrake",
+        "@lcm//:lcm-python",
+    ],
+)
+
+py_binary(
+    name = "PD_StatueStand",
+    srcs = ["PD_StatueStand.py"],
+    deps = [
+        "//cassie/comms/lcmtypes:lcmtypes_py",
+        "@lcm//:lcm-python",
+    ],
+)
+
+# -- Tests --
+
+cc_test(
+    name = "control_util_test",
+    size = "small",
+    srcs = ["test/control_util_test.cc"],
+    deps = [
+        "//cassie:cassie_common",
+        "//cassie/control:control_util",
+        "@drake//common/test_utilities:eigen_matrix_compare",
+        "@gtest//:main",
+    ],
+)
+
+add_lint_tests(python_lint_exclude = [
+    ":qp_balance_hw.py",
+    ":cassie_balancing_mock.py",
+    ":cassie_balancing_sim.py",
+])

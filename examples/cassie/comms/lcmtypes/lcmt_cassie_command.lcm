@@ -1,0 +1,27 @@
+package cassie_types;
+
+struct lcmt_cassie_command {
+  // The timestamp in microseconds.
+  int64_t utime;
+
+  float motor_torques[10];
+  
+  float motor_positions_desired[10];
+  float motor_velocities_desired[10];
+
+  float motor_kp[10];
+  float motor_kd[10];
+  float motor_ki[10];
+
+  float leak_factor[10];
+  float integrator_clamp[10];
+}
+
+/*
+ * Modified 2018-03-19
+ * - Rename from lcmt_cassie_input to lcmt_cassie_command
+ *
+ * Modified 2018-03-16
+ * - Added float leak_factor[10] - a leakiness factor for Simulink error integration
+ * - Added float integrator_clamp[10] - maximum magnitude of error integration
+ */

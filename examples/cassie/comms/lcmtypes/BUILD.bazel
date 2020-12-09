@@ -1,0 +1,51 @@
+# -*- python -*-
+
+package(default_visibility = ["//visibility:public"])
+
+load("@drake//tools/install:install.bzl", "install")
+load(
+    "@drake//tools/skylark:drake_lcm.bzl",
+    "drake_lcm_cc_library",
+    "drake_lcm_java_library",
+    "drake_lcm_py_library",
+)
+load("@drake//tools/lint:lint.bzl", "add_lint_tests")
+
+drake_lcm_cc_library(
+    name = "lcmtypes_cc",
+    lcm_package = "cassie_types",
+    lcm_srcs = glob(["*.lcm"]),
+)
+
+drake_lcm_py_library(
+    name = "lcmtypes_py",
+    lcm_package = "cassie_types",
+    lcm_srcs = glob(["*.lcm"]),
+)
+
+drake_lcm_java_library(
+    name = "lcmtypes_java",
+    lcm_package = "cassie_types",
+    lcm_srcs = glob(["*.lcm"]),
+)
+
+install(
+    name = "install_cc_headers",
+    hdrs = [":lcmtypes_cc"],
+    hdr_dest = "include/cassie_lcmtypes",
+    visibility = ["//visibility:private"],
+)
+
+install(
+    name = "install",
+    targets = [
+        ":lcmtypes_java",
+        ":lcmtypes_py",
+    ],
+    deps = [
+        ":install_cc_headers",
+        "@lcm//:install",
+    ],
+)
+
+add_lint_tests(enable_install_lint = False)

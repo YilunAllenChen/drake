@@ -1,0 +1,60 @@
+# -*- mode: python -*-
+# vi: set ft=python :
+
+load("@drake//tools/lint:lint.bzl", "add_lint_tests")
+
+# -- Libraries --
+
+cc_library(
+    name = "csv_parser",
+    srcs = [
+        "csv_parser.cc",
+    ],
+    hdrs = [
+        "csv_parser.h",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        "@eigen",
+    ],
+)
+
+# -- Executables --
+
+cc_binary(
+    name = "csv_parser_test",
+    srcs = ["csv_parser_test.cc"],
+    deps = [
+        ":csv_parser",
+    ],
+)
+
+cc_binary(
+    name = "cassie_output_visualizer",
+    srcs = ["cassie_output_visualizer.cc"],
+    deps = [
+        "//cassie:cassie_common",
+        "//cassie/comms:cassie_lcm_parsing",
+        "//cassie/comms/lcmtypes:lcmtypes_cc",
+        "@drake//attic/manipulation/util:simple_tree_visualizer",
+        "@drake//common:essential",
+        "@drake//lcm",
+        "@drake//math:geometric_transform",
+        "@lcm",
+    ],
+)
+
+py_binary(
+    name = "cassieLogToLcm",
+    srcs = ["cassieLogToLcm.py"],
+    deps = [
+        "//cassie/bindings:cassie_common_py",
+        "//cassie/comms/lcmtypes:lcmtypes_py",
+        "@drake//bindings/pydrake",
+        "@lcm//:lcm-python",
+    ],
+)
+
+# -- Tests --
+
+add_lint_tests()

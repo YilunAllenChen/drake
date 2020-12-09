@@ -1,0 +1,9 @@
+package cassie_types;
+
+struct lcmt_data {
+  // The timestamp in microseconds.
+  int64_t utime;
+
+  int32_t dim;
+  float data[dim];
+}

@@ -1,0 +1,5 @@
+package cassie_types;
+
+struct lcmt_flag {
+    boolean flag;
+}

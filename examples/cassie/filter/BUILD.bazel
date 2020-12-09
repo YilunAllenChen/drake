@@ -1,0 +1,72 @@
+# -*- mode: python -*-
+# vi: set ft=python :
+
+load("@drake//tools/lint:lint.bzl", "add_lint_tests")
+
+# -- Libraries --
+
+cc_library(
+    name = "cassie_kinematic_filter",
+    srcs = [
+        "cassie_kinematic_filter.cc",
+    ],
+    hdrs = [
+        "cassie_kinematic_filter.h",
+    ],
+    deps = [
+        ":kinematic_filter",
+        "//cassie:cassie_common",
+        "@drake//attic/multibody:rigid_body_tree",
+        "@drake//math:autodiff",
+        "@drake//math:gradient",
+    ],
+)
+
+cc_library(
+    name = "kinematic_filter",
+    hdrs = [
+        "kinematic_filter.h",
+    ],
+    deps = [
+        "@drake//math:autodiff",
+        "@drake//math:expmap",
+        "@drake//math:geometric_transform",
+    ],
+)
+
+# -- Executables --
+
+cc_binary(
+    name = "cassie_filter_node",
+    srcs = ["cassie_filter_node.cc"],
+    deps = [
+        "//cassie/comms:cassie_lcm_parsing",
+        "//cassie/comms/lcmtypes:lcmtypes_cc",
+        "//cassie/filter:cassie_kinematic_filter",
+        "@lcm",
+    ],
+)
+
+# -- Tests --
+
+cc_test(
+    name = "kinematic_filter_test",
+    size = "small",
+    srcs = ["test/kinematic_filter_test.cc"],
+    deps = [
+        "//cassie/filter:kinematic_filter",
+        "@gtest//:main",
+    ],
+)
+
+cc_test(
+    name = "cassie_kinematic_filter_test",
+    size = "small",
+    srcs = ["test/cassie_kinematic_filter_test.cc"],
+    deps = [
+        "//cassie/filter:cassie_kinematic_filter",
+        "@gtest//:main",
+    ],
+)
+
+add_lint_tests()

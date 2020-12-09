@@ -1,0 +1,58 @@
+# -*- mode: python -*-
+# vi: set ft=python :
+
+load("@drake//tools/lint:lint.bzl", "add_lint_tests")
+load(
+    "@drake//tools/skylark:pybind.bzl",
+    "pybind_py_library",
+)
+
+# -- Libraries --
+
+pybind_py_library(
+    name = "control_util_py",
+    cc_deps = ["//cassie/control:control_util"],
+    cc_so_name = "control_util",
+    cc_srcs = ["control_util_py.cc"],
+    py_deps = ["@drake//bindings/pydrake"],
+    py_imports = ["."],
+    visibility = ["//visibility:public"],
+)
+
+pybind_py_library(
+    name = "lcm_control_comms_py",
+    cc_deps = ["//cassie/control/lcm:control_comms"],
+    cc_so_name = "lcm_control_comms",
+    cc_srcs = ["lcm_control_comms_py.cc"],
+    py_deps = ["@drake//bindings/pydrake"],
+    py_imports = ["."],
+    visibility = ["//visibility:public"],
+)
+
+# -- Tests --
+
+py_test(
+    name = "control_util_py_test",
+    size = "small",
+    srcs = ["test/control_util_py_test.py"],
+    main = "test/control_util_py_test.py",
+    deps = [
+        ":control_util_py",
+        "//cassie/bindings:cassie_common_py",
+        "@drake//bindings/pydrake",
+    ],
+)
+
+py_test(
+    name = "lcm_control_comms_py_test",
+    size = "small",
+    srcs = ["test/lcm_control_comms_py_test.py"],
+    main = "test/lcm_control_comms_py_test.py",
+    deps = [
+        ":lcm_control_comms_py",
+        "//cassie/bindings:cassie_common_py",
+        "@drake//bindings/pydrake",
+    ],
+)
+
+add_lint_tests()

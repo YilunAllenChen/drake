@@ -1,0 +1,93 @@
+# -*- mode: python -*-
+# vi: set ft=python :
+
+load("@drake//tools/lint:lint.bzl", "add_lint_tests")
+
+# -- Libraries --
+
+cc_library(
+    name = "cassie_common",
+    srcs = ["cassie_common.cc"],
+    hdrs = ["cassie_common.h"],
+    data = ["//cassie/models:urdf"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "@drake//attic/multibody/joints",
+        "@drake//attic/multibody/parsers",
+        "@drake//attic/multibody:rigid_body_tree",
+        "@drake//attic/multibody:rigid_body_tree_construction",
+        "@drake//attic/multibody/rigid_body_plant",
+        # Required to make python bindings for this class
+        # "@drake//:drake_shared_library",
+    ],
+)
+
+# -- Executables --
+
+cc_binary(
+    name = "cassie_simulation_test",
+    srcs = ["cassie_simulation_test.cc"],
+    deps = [
+        ":cassie_common",
+        "@drake//attic/manipulation/util:sim_diagram_builder",
+        "@drake//attic/multibody:inverse_kinematics",
+        "@drake//attic/multibody/parsers",
+        "@drake//attic/multibody/rigid_body_plant",
+        "@drake//attic/multibody/rigid_body_plant:drake_visualizer",
+        "@drake//attic/multibody/rigid_body_plant:frame_visualizer",
+        "@drake//common:find_resource",
+        "@drake//common:text_logging_gflags",
+        "@drake//common/trajectories:piecewise_polynomial",
+        "@drake//lcm",
+        "@drake//math:autodiff",
+        "@drake//systems/analysis:simulator",
+        "@drake//systems/lcm",
+        "@drake//systems/primitives:constant_vector_source",
+        "@lcm",
+        "@lcmtypes_bot2_core",
+        "@lcmtypes_robotlocomotion",
+    ],
+)
+
+py_binary(
+    name = "cassie_python_simulation_test",
+    srcs = ["cassie_python_simulation_test.py"],
+    deps = [
+        "//cassie/bindings:cassie_common_py",
+        "@drake//bindings/pydrake",
+        "@lcm//:lcm-python",
+        "@libbot//:lcmtypes_bot_lcmgl",
+    ],
+)
+
+# -- Tests --
+
+cc_test(
+    name = "cassie_common_test",
+    size = "small",
+    srcs = ["test/cassie_common_test.cc"],
+    deps = [
+        "//cassie:cassie_common",
+        "@drake//common/test_utilities:eigen_matrix_compare",
+        "@gtest//:main",
+    ],
+)
+
+cc_test(
+    name = "cassie_drake_test",
+    size = "small",
+    srcs = ["test/cassie_drake_test.cc"],
+    deps = [
+        "//cassie:cassie_common",
+        "@drake//attic/manipulation/util:sim_diagram_builder",
+        "@drake//attic/multibody/rigid_body_plant",
+        "@drake//common/test_utilities:eigen_matrix_compare",
+        "@drake//lcm",
+        "@drake//systems/analysis:simulator",
+        "@drake//systems/framework:context",
+        "@drake//systems/primitives:constant_vector_source",
+        "@gtest//:main",
+    ],
+)
+
+add_lint_tests()

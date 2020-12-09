@@ -1,0 +1,36 @@
+# -*- mode: python -*-
+# vi: set ft=python :
+
+load("@drake//tools/lint:lint.bzl", "add_lint_tests")
+load(
+    "@drake//tools/skylark:pybind.bzl",
+    "pybind_py_library",
+)
+
+# -- Libraries --
+
+pybind_py_library(
+    name = "mock_low_level_py",
+    cc_deps = ["//cassie/models:mock_low_level"],
+    cc_so_name = "mock_low_level",
+    cc_srcs = ["mock_low_level_py.cc"],
+    py_deps = ["@drake//bindings/pydrake"],
+    py_imports = ["."],
+    visibility = ["//visibility:public"],
+)
+
+# -- Tests --
+
+py_test(
+    name = "mock_low_level_py_test",
+    size = "small",
+    srcs = ["test/mock_low_level_py_test.py"],
+    main = "test/mock_low_level_py_test.py",
+    deps = [
+        ":mock_low_level_py",
+        "//cassie/bindings:cassie_common_py",
+        "@drake//bindings/pydrake",
+    ],
+)
+
+add_lint_tests()

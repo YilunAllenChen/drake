@@ -1,0 +1,35 @@
+# -*- mode: python -*-
+# vi: set ft=python :
+
+load("@drake//tools/lint:lint.bzl", "add_lint_tests")
+load(
+    "@drake//tools/skylark:pybind.bzl",
+    "pybind_py_library",
+)
+
+# -- Libraries --
+
+pybind_py_library(
+    name = "cassie_lcm_parsing_py",
+    cc_deps = ["//cassie/comms:cassie_lcm_parsing"],
+    cc_so_name = "cassie_lcm_parsing",
+    cc_srcs = ["cassie_lcm_parsing_py.cc"],
+    py_deps = ["@drake//bindings/pydrake"],
+    py_imports = ["."],
+    visibility = ["//visibility:public"],
+)
+
+# -- Tests --
+
+py_test(
+    name = "cassie_lcm_parsing_py_test",
+    size = "small",
+    srcs = ["test/cassie_lcm_parsing_py_test.py"],
+    main = "test/cassie_lcm_parsing_py_test.py",
+    deps = [
+        ":cassie_lcm_parsing_py",
+        "@drake//bindings/pydrake",
+    ],
+)
+
+add_lint_tests()

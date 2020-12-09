@@ -1,0 +1,65 @@
+# -*- mode: python -*-
+# vi: set ft=python :
+
+load("@drake//tools/lint:lint.bzl", "add_lint_tests")
+
+# -- Libraries --
+
+filegroup(
+    name = "urdf",
+    data = glob(["urdf/**"]),
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "mock_low_level",
+    srcs = ["mock_low_level.cc"],
+    hdrs = ["mock_low_level.h"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//cassie:cassie_common",
+        "//cassie/comms:cassie_lcm_parsing",
+        "//cassie/comms/lcmtypes:lcmtypes_cc",
+        "@drake//systems/framework:leaf_system",
+    ],
+)
+
+# -- Executables --
+
+cc_binary(
+    name = "mock_cassie",
+    srcs = ["mock_cassie.cc"],
+    deps = [
+        "//cassie:cassie_common",
+        "//cassie/comms/lcmtypes:lcmtypes_cc",
+        "//cassie/models:mock_low_level",
+        "@drake//lcm",
+        "@drake//attic/multibody/rigid_body_plant",
+        "@drake//systems/analysis:simulator",
+        # "@drake//systems/primitives:constant_vector_source",
+        "@drake//systems/lcm",
+        "@drake//attic/manipulation/util:sim_diagram_builder",
+    ],
+)
+
+# -- Tests --
+
+cc_test(
+    name = "mock_low_level_test",
+    size = "small",
+    srcs = ["test/mock_low_level_test.cc"],
+    deps = [
+        "//cassie:cassie_common",
+        "//cassie/comms:cassie_lcm_parsing",
+        "//cassie/comms/lcmtypes:lcmtypes_cc",
+        "//cassie/models:mock_low_level",
+        "@drake//common/test_utilities:eigen_matrix_compare",
+        "@drake//lcm",
+        "@drake//systems/framework:abstract_values",
+        "@drake//systems/framework:value",
+        "@drake//systems/framework:vector",
+        "@gtest//:main",
+    ],
+)
+
+add_lint_tests()

@@ -1,0 +1,79 @@
+# -*- mode: python -*-
+# vi: set ft=python :
+
+load("@drake//tools/lint:lint.bzl", "add_lint_tests")
+
+# -- Libraries --
+
+cc_library(
+    name = "UDPDriver",
+    srcs = ["UDPDriver.cpp"],
+    hdrs = ["UDPDriver.hpp"],
+    linkopts = [
+        "-lboost_thread",
+        "-lboost_system",
+    ],
+    deps = [
+        "//cassie/comms/lcmtypes:lcmtypes_cc",
+        "@boost//:boost_headers",
+        "@lcm",
+    ],
+)
+
+cc_library(
+    name = "cassie_lcm_parsing",
+    srcs = [],
+    hdrs = ["cassie_lcm_parsing.h"],
+    visibility = ["//visibility:public"],
+    deps = [],
+)
+
+# -- Executables --
+
+cc_binary(
+    name = "UDPComms",
+    srcs = ["UDPComms.cpp"],
+    deps = [
+        "//cassie/comms:UDPDriver",
+        "//cassie/comms/lcmtypes:lcmtypes_cc",
+        "@boost//:boost_headers",
+        "@lcm",
+    ],
+)
+
+cc_binary(
+    name = "cassie_log_streamer",
+    srcs = ["cassie_log_streamer.cc"],
+    deps = [
+        "//cassie/comms/lcmtypes:lcmtypes_cc",
+        "//cassie/util:csv_parser",
+        "@lcm",
+    ],
+)
+
+# -- Tests --
+
+cc_test(
+    name = "cassie_lcm_parsing_test",
+    size = "small",
+    srcs = ["test/cassie_lcm_parsing_test.cc"],
+    deps = [
+        "//cassie/comms:cassie_lcm_parsing",
+        "@drake//common/test_utilities:eigen_matrix_compare",
+        "@gtest//:main",
+    ],
+)
+
+cc_test(
+    name = "UDPDriver_test",
+    size = "small",
+    srcs = ["test/UDPDriver_test.cc"],
+    deps = [
+        "//cassie/comms:UDPDriver",
+        "//cassie/comms/lcmtypes:lcmtypes_cc",
+        "@boost//:boost_headers",
+        "@gtest//:main",
+    ],
+)
+
+add_lint_tests()

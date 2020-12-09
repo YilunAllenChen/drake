@@ -1,0 +1,16 @@
+package cassie_types;
+
+struct lcmt_cassie_state {
+  // The timestamp in microseconds.
+  int64_t utime;
+
+  // position
+  float q[23];
+
+  // velocity
+  float v[22];
+
+  // contact mode
+  boolean left_foot;
+  boolean right_foot;
+}
